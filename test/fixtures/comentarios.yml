@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  cuerpo: MyText
+  votos: 1
+  usuario_id: 1
+  preguntum_id: 1
+  comentario_padre_id: 1
+
+two:
+  cuerpo: MyText
+  votos: 1
+  usuario_id: 1
+  preguntum_id: 1
+  comentario_padre_id: 1

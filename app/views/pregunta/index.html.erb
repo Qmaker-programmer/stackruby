@@ -1,0 +1,43 @@
+<h1>Preguntas de la Comunidad</h1>
+
+<%= form_with url: root_path, method: :get, local: true, style: "margin-bottom: 25px;" do |f| %>
+  <div style="display: flex; gap: 10px;">
+    <%= f.text_field :buscar, placeholder: "Buscar pregunta por título o cuerpo...", value: params[:buscar], style: "margin-bottom: 0;" %>
+    <%= f.submit "Buscar", style: "background: var(--accent); padding: 0 20px;" %>
+  </div>
+<% end %>
+
+<div style="margin-top: 20px; margin-bottom: 50px;">
+  <%= link_to "Hacer una Pregunta", new_preguntum_path, class: "btn", style: "background-color: var(--accent-green); color: white; padding: 10px 15px; border-radius: 6px; font-weight: bold; display: inline-block;" %>
+</div>
+
+<div id="pregunta">
+  <% @pregunta.each do |preguntum| %>
+    <div class="card">
+      <h3 style="margin-bottom: 8px;"><%= link_to preguntum.titulo, preguntum %></h3>
+      
+      <p style="font-size: 0.85em; color: var(--text-secundario); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+        <% if preguntum.usuario&.foto_base64.present? %>
+          <img src="<%= preguntum.usuario.foto_base64 %>" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
+        <% else %>
+        
+        <% end %>
+        Publicado por: 
+        <% if preguntum.usuario.present? %>
+          <%= link_to preguntum.usuario.nombre, usuario_path(preguntum.usuario), style: "font-weight: bold; color: var(--accent);" %>
+        <% else %>
+          <em>Anónimo</em>
+        <% end %>
+        • <%= preguntum.created_at.strftime("%d/%m/%Y %H:%M") %>
+      </p>
+
+      <p style="color: var(--text-principal); font-size: 1em; margin-bottom: 15px;"><%= preguntum.cuerpo %></p>
+      
+      <div style="display: flex; align-items: center; gap: 12px; background: var(--bg-principal); padding: 8px 12px; border-radius: 6px; width: fit-content; border: 1px solid var(--border-color);">
+        <strong style="color: white; font-size: 0.9em;">Votos: <%= preguntum.votos %></strong>
+        <%= button_to "▲", votar_arriba_preguntum_path(preguntum), method: :patch, style: "background: none; padding: 2px 8px; color: var(--accent);" %>
+        <%= button_to "▼", votar_abajo_preguntum_path(preguntum), method: :patch, style: "background: none; padding: 2px 8px; color: #da3633;" %>
+      </div>
+    </div>
+  <% end %>
+</div>

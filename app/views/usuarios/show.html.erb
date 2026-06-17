@@ -1,0 +1,49 @@
+<%= link_to "Volver al Inicio", root_path, style: "text-decoration: none; color: var(--text-secundario);" %>
+
+<div class="card" style="display: flex; gap: 25px; align-items: center; margin-top: 20px;">
+  <% if @usuario.foto_base64.present? %>
+    <img src="<%= @usuario.foto_base64 %>" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);">
+  <% else %>
+    <div style="width: 80px; height: 80px; background: #30363d; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2em; border: 1px solid var(--border-color);">👤</div>
+  <% end %>
+  
+  <div>
+    <h1 style="margin: 0; font-size: 2em;"><%= @usuario.nombre %></h1>
+    <p style="color: var(--text-secundario); margin-top: 8px; margin-bottom: 0; font-style: italic; font-size: 1.05em; white-space: pre-line;">
+      <%= @usuario.descripcion.present? ? @usuario.descripcion : "Este usuario aún no ha escrito una descripción." %>
+    </p>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px;">Estadísticas de la Cuenta 📊</h3>
+  <ul style="list-style: none; padding: 0; margin: 0; line-height: 2;">
+    <li>- <strong style="color: white;">Preguntas realizadas:</strong> <%= @total_preguntas %></li>
+    <li>- <strong style="color: white;">Votos recibidos: </strong> <%= @total_votos_recibidos %> puntos</li>
+    <li>- <strong style="color: white;">Votos emitidos a otros: </strong> <%= @votos_emitidos %> veces</li>
+  </ul>
+</div>
+
+<h2 style="margin-top: 35px; margin-bottom: 20px;">Preguntas hechas por este usuario 📋</h2>
+
+<% if @pregunta.any? %>
+  <% @pregunta.each do |preguntum| %>
+    <div class="card" style="position: relative;">
+      <h4 style="margin-bottom: 10px;"><%= link_to preguntum.titulo, preguntum %></h4>
+      <p style="color: var(--text-principal); margin-bottom: 15px; font-size: 0.95em;"><%= preguntum.cuerpo %></p>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <span style="background: rgba(88, 166, 255, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+          ⭐ Votos logrados: <%= preguntum.votos %>
+        </span>
+        <small style="color: var(--text-secundario); font-size: 0.8em;">
+          Publicado el <%= preguntum.created_at.strftime("%d/%m/%Y") %>
+        </small>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <p style="color: var(--text-secundario); font-style: italic; background: var(--bg-tarjeta); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color);">
+    Este usuario aún no ha realizado ninguna pregunta en StackRuby.
+  </p>
+<% end %>

@@ -1,0 +1,26 @@
+require 'bcrypt'
+
+class Usuario < ApplicationRecord
+  has_many :pregunta
+  has_many :comentarios
+
+  validates :nombre, presence: true, uniqueness: { case_sensitive: false }, length: { minimum: 3 }
+  validates :contrasena, presence: true, length: { minimum: 6 }
+
+  # EFECTO ENCRIPTAR: Antes de guardar en la base de datos, encriptamos la contraseña
+  before_save :encriptar_contrasena, if: :will_save_change_to_contrasena?
+
+  # Método para verificar si la contraseña ingresada coincide con el hash encriptado
+  def contrasena_valida?(password_ingresado)
+    BCrypt::Password.new(self.contrasena) == password_ingresado
+  rescue BCrypt::Errors::InvalidHash
+    # Por si acaso quedaron contraseñas viejas en texto plano sin encriptar
+    self.contrasena == password_ingresado
+  end
+
+  private
+
+  def encriptar_contrasena
+    self.contrasena = BCrypt::Password.create(self.contrasena)
+  end
+end

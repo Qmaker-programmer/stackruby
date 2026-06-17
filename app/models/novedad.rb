@@ -1,0 +1,2 @@
+class Novedad < ApplicationRecord
+end

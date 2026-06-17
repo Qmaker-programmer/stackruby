@@ -1,0 +1,6 @@
+<div class="card">
+  <h2>Editar tu publicación</h2>
+  <%= render 'form', preguntum: @preguntum %>
+</div>
+<%= link_to 'Ver pregunta', @preguntum, style: "color: var(--accent);" %> |
+<%= link_to 'Volver atrás', pregunta_path, style: "color: var(--text-secundario);" %>

@@ -1,0 +1,9 @@
+<h2>Novedades del Desarrollo de StackRuby</h2>
+
+<% @novedades.each do |novedad| %>
+  <div class="card">
+    <h3><%= link_to novedad.titulo, novedades_path(id: novedad.id) %></h3>
+    <p><%= link_to novedad.cuerpo, novedades_path(id: novedad.id) %></p>
+    <small style="color: var(--text-secundario);">Publicado el: <%= novedad.created_at.strftime("%d/%m/%Y") %></small>
+  </div>
+<% end %>

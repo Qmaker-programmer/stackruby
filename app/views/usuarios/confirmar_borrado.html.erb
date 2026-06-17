@@ -1,0 +1,42 @@
+<%= link_to "Volver a la configuracion", edit_usuario_path(@usuario), style: "color: var(--text-secundario);" %>
+
+<div class="card" style="border: 1px solid #da3633; background: rgba(218, 54, 51, 0.02); margin-top: 25px; max-width: 600px;">
+  <h2 style="color: #f85149; margin-bottom: 15px;">Prueba de Conciencia: Eliminar Cuenta</h2>
+  <p style="color: var(--text-secundario); font-size: 0.95em; line-height: 1.5; margin-bottom: 20px;">
+    Esta accion eliminara su perfil, preguntas y comentarios de forma permanente. 
+    Para demostrar que esta completamente seguro y consciente, resuelva los siguientes tres desafios de verificacion:
+  </p>
+
+  <%= form_with url: destruir_cuenta_usuario_path(@usuario), method: :delete, local: true do |f| %>
+    
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 8px; color: white;">
+        1. Escriba su nombre de usuario (<strong><%= @usuario.nombre %></strong>) exactamente <strong><%= @veces %></strong> veces seguidas (sin espacios):
+      </label>
+      <%= text_field_tag :verificacion_nombre, nil, placeholder: "Ejemplo: #{@usuario.nombre * @veces}", required: true, autocomplete: "off" %>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label style="display: block; margin-bottom: 8px; color: white;">
+        2. Resuelva la siguiente operacion matematica: 
+        <strong style="background: var(--bg-principal); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">
+          <%= @num1 %> + <%= @num2 %>
+        </strong>
+      </label>
+      <%= number_field_tag :verificacion_suma, nil, placeholder: "Resultado de la suma", required: true %>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <label style="display: block; margin-bottom: 8px; color: white;">
+        3. Escriba la palabra <strong>ELIMINAR</strong> exactamente <strong><%= @veces %></strong> veces seguidas (en mayusculas y sin espacios):
+      </label>
+      <%= text_field_tag :verificacion_palabra, nil, placeholder: "Ejemplo: #{'ELIMINAR' * @veces}", required: true, autocomplete: "off" %>
+    </div>
+
+    <div style="display: flex; gap: 15px; align-items: center;">
+      <%= f.submit "Eliminar mi Cuenta para Siempre", style: "background-color: #da3633;" %>
+      <%= link_to "Cancelar", edit_usuario_path(@usuario), style: "color: var(--text-secundario);" %>
+    </div>
+
+  <% end %>
+</div>

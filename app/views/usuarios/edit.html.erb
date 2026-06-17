@@ -1,0 +1,53 @@
+<div class="card">
+  <h2>Configuración de tu Cuenta</h2>
+  
+  <%= form_with model: @usuario, url: usuario_path(@usuario), method: :patch, local: true, html: { multipart: true } do |f| %>
+    <p>
+      <%= f.label :nombre, "Cambiar Nombre de Usuario" %><br>
+      <%= f.text_field :nombre, value: params[:usuario].present? ? params[:usuario][:nombre] : @usuario.nombre, required: true %>
+    </p>
+
+    <p>
+      <%= f.label :descripcion, "Tu Descripción (Biografía)" %><br>
+      <%= f.text_area :descripcion, rows: 4, value: params[:usuario].present? ? params[:usuario][:descripcion] : @usuario.descripcion, placeholder: "Cuéntale a la comunidad quién eres..." %>
+    </p>
+
+    <p>
+      <%= f.label :foto, "Subir Icono desde tu computador" %><br>
+      <%= f.file_field :foto, accept: 'image/*' %>
+    </p>
+
+    <%# --- VISTA PREVIA DESDE EL SERVIDOR (SIN JS) --- %>
+    <% if @foto_previa_base64.present? %>
+      <div style="margin-bottom: 20px; border: 1px dashed var(--accent); padding: 15px; border-radius: 6px;">
+        <p style="color: var(--accent); margin-top: 0;">Vista previa de tu nueva foto (Aún no guardada):</p>
+        <img src="<%= @foto_previa_base64 %>" class="avatar">
+        <%# Mantenemos la foto en un campo oculto para no perderla si vuelve a enviar %>
+        <%= hidden_field_tag :foto_temporal_base64, @foto_previa_base64 %>
+      </div>
+    <% end %>
+
+    <% if @usuario.foto_base64.present? %>
+      <div style="margin-bottom: 20px;">
+        <p>Icono actual:</p>
+        <img src="<%= @usuario.foto_base64 %>" class="avatar">
+      </div>
+    <% end %>
+
+    <div style="display: flex; gap: 10px;">
+      <%# Botón 1: Envía al servidor para refrescar y ver la preview %>
+      <%= f.submit "Previsualizar Imagen", name: "previsualizar", style: "background-color: var(--border-color);" %>
+      
+      <% shadow_submit_text = @foto_previa_base64.present? ? "Confirmar y Guardar" : "Guardar Cambios Directamente" %>
+      <%= f.submit shadow_submit_text, name: "guardar" %>
+    </div>
+  <% end %>
+</div>
+
+<hr style="margin-top: 40px; border: 0; border-top: 1px solid var(--border-color);">
+
+<div style="margin-top: 20px;">
+  <%= link_to "Eliminar mi cuenta permanentemente", confirmar_borrado_usuario_path(@usuario), style: "color: #da3633; font-weight: bold; font-size: 0.95em;" %>
+</div>
+
+<%= link_to "Cancelar y Volver", root_path %>

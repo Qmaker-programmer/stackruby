@@ -1,0 +1,20 @@
+<h1>Únete a la comunidad de StackRuby</h1>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+  <div class="card">
+    <h2>Crear Cuenta</h2>
+    <%= form_with url: registrar_path, local: true do |f| %>
+      <p><%= f.label :nombre, "Nombre de Usuario" %><br><%= f.text_field :nombre, required: true %></p>
+      <p><%= f.label :contrasena, "Contraseña" %><br><%= f.password_field :contrasena, required: true %></p>
+      <%= f.submit "Registrarme", style: "width: 100%;" %>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <h2>Entrar</h2>
+    <%= form_with url: iniciar_path, local: true do |f| %>
+      <p><%= f.label :nombre, "Nombre de Usuario" %><br><%= f.text_field :nombre, required: true %></p>
+      <p><%= f.label :contrasena, "Contraseña" %><br><%= f.password_field :contrasena, required: true %></p>
+      <%= f.submit "Iniciar Sesión", style: "width: 100%; background-color: var(--accent);" %>
+    <% end %>
+  </div>
+</div>

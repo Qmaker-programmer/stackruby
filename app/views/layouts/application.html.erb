@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>StackRuby</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <style>
+      :root {
+        --bg-principal: #0d1117;
+        --bg-tarjeta: #161b22;
+        --border-color: #30363d;
+        --text-principal: #c9d1d9;
+        --text-secundario: #8b949e;
+        --accent: #58a6ff;
+        --accent-green: #238636;
+      }
+      
+      html, body {
+        background-color: var(--bg-principal);
+        color: var(--text-principal);
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        margin: 0; 
+        padding: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      /* Layout Fullscreen de dos columnas con Sidebar a la Izquierda */
+      .app-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr; /* 280px fijos para el sidebar, el resto para el contenido */
+        min-height: 100vh;
+        width: 100%;
+      }
+
+      /* Sidebar pegado a la izquierda ocupando todo el alto */
+      .sidebar {
+        background-color: var(--bg-tarjeta);
+        border-right: 1px solid var(--border-color);
+        padding: 25px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Contenedor principal que usa TODO el ancho restante */
+      main {
+        padding: 40px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        width: 100%;
+      }
+
+      /* Tarjetas expandidas que ocupan el 100% del ancho disponible */
+      .card {
+        background-color: var(--bg-tarjeta);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 20px;
+        width: 100%;
+        box-sizing: border-box; /* Evita que el padding deforme el ancho completo */
+      }
+
+      h1, h2, h3 { 
+        color: #fff; margin-top: 0; 
+      }
+
+      a { 
+        color: var(--accent); 
+        text-decoration: none; 
+      }
+      a:hover { 
+        text-decoration: underline; 
+      }
+
+      /* Inputs estirados al ancho completo real */
+      input[type="text"], textarea, input[type="file"], input[type="password"] {
+        background-color: var(--bg-principal); 
+        border: 1px solid var(--border-color);
+        color: var(--text-principal); 
+        border-radius: 6px; 
+        padding: 12px; 
+        width: 100%; 
+        box-sizing: border-box; 
+        margin-bottom: 15px;
+        font-size: 1em;
+      }
+
+      /* Estilos específicos para el botón interno de subir archivo */
+      input[type="file"]::file-selector-button {
+        background-color: var(--border-color);
+        color: var(--text-principal);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 4px 12px;
+        margin-right: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+
+      /* Estilos específicos para el botón interno de subir archivo */
+      input[type="file"]::file-selector-button {
+        background-color: var(--border-color);
+        color: var(--text-principal);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 4px 12px;
+        margin-right: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+      }
+
+      input[type="file"]::file-selector-button:hover {
+        background-color: var(--text-secundario);
+        color: var(--bg-principal);
+      }
+
+      input[type="submit"], button {
+        background-color: var(--accent-green); 
+        color: white; 
+        border: none; 
+        padding: 12px 20px; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        font-weight: bold;
+        font-size: 1em;
+      }
+
+      .flash-notice { 
+        padding: 12px; 
+        background: rgba(35, 134, 54, 0.2); 
+        border: 1px solid var(--accent-green); 
+        border-radius: 6px; 
+        color: #56d364; margin-bottom: 25px; 
+      }
+
+      .flash-alert { 
+        padding: 12px; 
+        background: rgba(218, 54, 51, 0.2); 
+        border: 1px solid #da3633; 
+        border-radius: 6px; 
+        color: #f85149; margin-bottom: 25px; 
+      }
+
+      .avatar { 
+        width: 64px; 
+        height: 64px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        border: 2px solid var(--accent); 
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-layout">
+      
+      <aside class="sidebar">
+        <h1>
+          <%= link_to "
+          StackRuby
+          ", 
+          root_path,
+          style: "
+          text-decoration: none
+          color: var(
+          --text-secundario
+          );" 
+          %>
+        </h1>
+        
+        <hr style="border: 0; border-top: 1px solid var(--border-color); width: 100%; margin-bottom: 25px;">
+
+        <% if usuario_actual %>
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <% if usuario_actual.foto_base64.present? %>
+              <img src="<%= usuario_actual.foto_base64 %>" class="avatar">
+            <% else %>
+              <div style="width: 64px; height: 64px; background: #30363d; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">👤</div>
+            <% end %>
+            <div>
+              <strong style="display: block; color: white; font-size: 1.1em;"><%= usuario_actual.nombre %></strong>
+              <%= link_to "Mi Perfil Público", usuario_path(usuario_actual), style: "font-size: 0.85em;" %>
+            </div>
+          </div>
+          
+          <ul style="list-style: none; padding: 0; margin: 0 0 25px 0; line-height: 2.2; font-size: 1.05em;">
+
+            <li>-
+             <%= link_to "
+             Preguntas
+             ", 
+             root_path %>
+            </li>
+
+            <li>-
+             <%= link_to "
+             Configurar mi Cuenta
+             ", 
+             edit_usuario_path(usuario_actual) %>
+            </li>
+
+            <li>- 
+              <%= link_to "
+              Novedades
+              ", 
+              novedades_path %>
+            </li>
+            
+            <li>- 
+              <%= link_to "
+              Cerrar Sesión
+              ", 
+              salir_path, 
+              style: "color: #da3633;" %>
+            </li>
+
+          </ul>
+        <% else %>
+          <p style="font-size: 0.95em; color: var(--text-secundario); margin-bottom: 20px;">No has iniciado sesión.</p>
+          <%= link_to "Entrar / Registrarse", entrar_path, style: "font-weight: bold; display: block; margin-bottom: 25px; font-size: 1.05em;" %>
+          <ul style="list-style: none; padding: 0; margin: 0 0 25px 0; line-height: 2.2;">
+            <li><%= link_to "Novedades (Blog)", novedades_path %></li>
+          </ul>
+        <% end %>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); width: 100%; margin-bottom: 25px;">
+
+      <h3 style="font-size: 1.1em; margin-bottom: 12px;">Buscar Usuario</h3>
+      <%= form_with url: buscar_usuarios_path, method: :get, local: true do |f| %>
+        <input type="text" name="termino" value="<%= params[:termino] %>" placeholder="Escriba parte del nombre..." style="padding: 8px; margin-bottom: 10px; font-size: 0.9em;" required>
+        <button type="submit" style="width: 100%; background: #30363d; padding: 8px; font-size: 0.9em;">Buscar Perfil</button>
+      <% end %>
+      </aside>
+
+      <main>
+        <% if notice %> <div class="flash-notice"><%= notice %></div> <% end %>
+        <% if alert %> <div class="flash-alert"><div class="flash-alert"><%= alert %></div> <% end %>
+        <%= yield %>
+      </main>
+
+    </div>
+  </body>
+</html>

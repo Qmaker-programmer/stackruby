@@ -1,0 +1,6 @@
+<%= link_to "← Volver a Novedades", novedades_path %>
+<div class="card" style="margin-top: 20px;">
+  <h1><%= @novedad.titulo %></h1>
+  <small style="color: var(--text-secundario); display: block; margin-bottom: 20px;">Publicado el <%= @novedad.created_at.to_date %></small>
+  <p style="font-size: 1.1em; white-space: pre-line;"><%= @novedad.cuerpo %></p>
+</div>

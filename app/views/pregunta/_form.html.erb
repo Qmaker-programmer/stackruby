@@ -1,0 +1,26 @@
+<%= form_with(model: preguntum) do |form| %>
+  <% if preguntum.errors.any? %>
+    <div style="padding: 12px; background: rgba(218, 54, 51, 0.15); border: 1px solid #da3633; border-radius: 6px; color: #f85149; margin-bottom: 20px;">
+      <h4 style="margin: 0 0 10px 0;">Tiene <%= preguntum.errors.count %> error(s) evitan que se guarde:</h4>
+      <ul style="margin: 0; padding-left: 20px; font-size: 0.9em;">
+        <% preguntum.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :titulo, "Título de la pregunta", style: "display: block; margin-bottom: 5px; font-weight: bold;" %><br>
+    <%= form.text_field :titulo, placeholder: "Sé específico, ej: ¿Cómo parsear un JSON en Ruby?" %>
+  </div>
+
+  <div class="field" style="margin-bottom: 15px;">
+    <%= form.label :cuerpo, "Explica tu duda o problema con detalle", style: "display: block; margin-bottom: 5px; font-weight: bold;" %><br>
+    <%= form.text_area :cuerpo, rows: 6, placeholder: "Introduce el contexto, código de error y lo que has intentado..." %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit preguntum.new_record? ? "Publicar Pregunta" : "Guardar Cambios" %>
+  </div>
+<% end %>

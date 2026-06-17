@@ -1,0 +1,59 @@
+<%= link_to "Volver al Inicio", root_path, style: "color: var(--text-secundario);" %>
+
+<div class="card" style="margin-top: 20px;">
+  <h1 style="margin-bottom: 10px;"><%= @preguntum.titulo %></h1>
+  
+  <p style="color: var(--text-secundario); font-size: 0.9em; display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+    <% if @preguntum.usuario&.foto_base64.present? %>
+      <img src="<%= @preguntum.usuario.foto_base64 %>" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+    <% end %>
+    Publicado por: <strong><%= @preguntum.usuario&.nombre || "Anonimo" %></strong> | 
+    <strong style="color: white;">Votos: <%= @preguntum.votos %></strong>
+  </p>
+  
+  <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 20px;">
+  <p style="font-size: 1.15em; line-height: 1.6; color: var(--text-principal); white-space: pre-line;"><%= @preguntum.cuerpo %></p>
+</div>
+
+<h2 style="margin-top: 40px; margin-bottom: 20px;">Comentarios en hilo</h2>
+
+<% if usuario_actual %>
+  <%= form_with url: preguntum_comentarios_path(@preguntum), local: true, style: "margin-bottom: 30px;" do |f| %>
+    <%= f.text_area :cuerpo, rows: 3, placeholder: "Aporta a la discusion o escribe una solucion...", required: true %>
+    <%= f.submit "Publicar Comentario Principal" %>
+  <% end %>
+<% else %>
+  <p style="background: rgba(242, 214, 114, 0.1); color: #dbab09; padding: 12px; border-radius: 6px; border: 1px solid #dbab09; font-size: 0.95em;">
+    <%= link_to "Inicia sesion", entrar_path, style: "font-weight: bold; color: #fff; text-decoration: underline;" %> para participar en la discusion.
+  </p>
+<% end %>
+
+<div style="margin-top: 20px;">
+  <%= render partial: 'comentarios/comentario', collection: @preguntum.comentarios.where(comentario_padre_id: nil).order(votos: :desc, created_at: :asc) %>
+</div>
+
+<hr style="margin-top: 50px; border: 0; border-top: 1px solid var(--border-color);">
+
+<%# Zona de Gestion de la pregunta %>
+<div style="margin-bottom: 40px;">
+  
+  <% if usuario_actual && @preguntum.usuario_id == usuario_actual.id %>
+    
+    <div style="margin-bottom: 20px; font-size: 0.95em;">
+      <%= link_to 'Editar esta Pregunta', edit_preguntum_path(@preguntum), style: "color: var(--accent); font-weight: bold;" %>
+      <span style="color: var(--border-color); margin: 0 10px;">|</span>
+      
+      <%# MODIFICADO: Ahora es un enlace simple a la pantalla intermedia de confirmacion %>
+      <%= link_to 'Borrar esta Pregunta', delete_preguntum_path(@preguntum), style: "color: #da3633; font-weight: bold;" %>
+      <span style="color: var(--border-color); margin: 0 10px;">|</span>
+      
+      <%= link_to 'Volver a la lista', root_path, style: "color: var(--text-secundario);" %>
+    </div>
+
+  <% else %>
+    <div style="font-size: 0.95em; margin-top: 20px;">
+      <%= link_to 'Volver a la lista', root_path, style: "color: var(--text-secundario);" %>
+    </div>
+  <% end %>
+
+</div>

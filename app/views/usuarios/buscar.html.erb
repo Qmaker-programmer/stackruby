@@ -1,0 +1,29 @@
+<%= link_to "Volver al Inicio", root_path, style: "color: var(--text-secundario);" %>
+
+<h1 style="margin-top: 20px; margin-bottom: 10px;">Resultados de Busqueda de Usuarios</h1>
+<p style="color: var(--text-secundario); margin-bottom: 25px;">
+  Buscando coincidencias para: <strong style="color: white;"><%= params[:termino] %></strong>
+</p>
+
+<% if @usuarios.any? %>
+  <div id="resultados-usuarios">
+    <% @usuarios.each do |usuario| %>
+      <div class="card" style="margin-bottom: 15px; display: flex; align-items: center; gap: 15px;">
+        <% if usuario.foto_base64.present? %>
+          <img src="<%= usuario.foto_base64 %>" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+        <% end %>
+        
+        <div>
+          <h3 style="margin: 0;"><%= link_to usuario.nombre, usuario_path(usuario), style: "color: var(--accent); font-weight: bold;" %></h3>
+          <p style="margin: 5px 0 0 0; font-size: 0.85em; color: var(--text-secundario);">
+            Miembro desde: <%= usuario.created_at.strftime("%d/%m/%Y") %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="card" style="border: 1px solid var(--border-color); text-align: center; padding: 40px 20px;">
+    <p style="color: var(--text-secundario); margin: 0;">No se encontraron usuarios que coincidan con tu busqueda.</p>
+  </div>
+<% end %>

@@ -1,0 +1,17 @@
+<%= link_to "Volver a la pregunta", preguntum_path(@preguntum), style: "color: var(--text-secundario);" %>
+
+<div class="card" style="border: 1px solid #da3633; background: rgba(218, 54, 51, 0.02); margin-top: 25px;">
+  <h3 style="color: #f85149; margin-bottom: 10px;">Confirmacion requerida para eliminar</h3>
+  <p style="color: var(--text-secundario); font-size: 0.95em; margin-bottom: 15px;">
+    Esta accion no se puede deshacer. Para confirmar la eliminacion permanente, escriba el titulo exacto de la publicacion:
+    <br>
+    <strong style="color: white; display: inline-block; margin-top: 8px; background: var(--bg-principal); padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border-color); font-family: monospace;"><%= @preguntum.titulo %></strong>
+  </p>
+
+  <%= form_with url: preguntum_path(@preguntum), method: :delete, local: true do |f| %>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <%= text_field_tag :confirmar_titulo, nil, placeholder: "Copie o escriba el titulo aqui...", required: true, style: "margin-bottom: 0;" %>
+      <%= f.submit "Eliminar Definitivamente", style: "background-color: #da3633; white-space: nowrap;" %>
+    </div>
+  <% end %>
+</div>
