@@ -45,7 +45,11 @@ class PreguntaController < ApplicationController
     @preguntum = Preguntum.new(preguntum_params)
     @preguntum.usuario_id = usuario_actual.id
 
-    if @preguntum.save
+    # Si presionó el botón de preview
+    if params[:preview]
+      @preview_html = markdown_to_html(@preguntum.cuerpo_markdown)
+      render :new, status: :unprocessable_entity
+    elsif @preguntum.save
       redirect_to @preguntum, notice: "Pregunta creada con éxito."
     else
       render :new, status: :unprocessable_entity
@@ -54,7 +58,12 @@ class PreguntaController < ApplicationController
 
   # PATCH/PUT /pregunta/1
   def update
-    if @preguntum.update(preguntum_params)
+    # Si presionó el botón de preview
+    if params[:preview]
+      @preguntum.assign_attributes(preguntum_params)
+      @preview_html = markdown_to_html(@preguntum.cuerpo_markdown)
+      render :edit, status: :unprocessable_entity
+    elsif @preguntum.update(preguntum_params)
       redirect_to @preguntum, notice: "Pregunta actualizada."
     else
       render :edit, status: :unprocessable_entity
@@ -133,6 +142,22 @@ end
   end
 
   def preguntum_params
-    params.require(:preguntum).permit(:titulo, :cuerpo)
+    params.require(:preguntum).permit(:titulo, :cuerpo_markdown)
+  end
+
+  def markdown_to_html(text)
+    return "" if text.blank?
+    require 'kramdown'
+
+    # Normalizar tablas
+    texto_normalizado = text.gsub(/\|[—–−]+\|/, '|---|')
+
+    options = {
+      input: 'GFM',
+      hard_wrap: true,
+      parse_block_html: true,
+      parse_span_html: true
+    }
+    Kramdown::Document.new(texto_normalizado, options).to_html.html_safe
   end
 end

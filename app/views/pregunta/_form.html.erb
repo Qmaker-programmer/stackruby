@@ -16,11 +16,24 @@
   </div>
 
   <div class="field" style="margin-bottom: 15px;">
-    <%= form.label :cuerpo, "Explica tu duda o problema con detalle", style: "display: block; margin-bottom: 5px; font-weight: bold;" %><br>
-    <%= form.text_area :cuerpo, rows: 6, placeholder: "Introduce el contexto, código de error y lo que has intentado..." %>
+    <%= form.label :cuerpo_markdown, "Explica tu duda o problema con detalle (Markdown soportado)", style: "display: block; margin-bottom: 5px; font-weight: bold;" %><br>
+    <%= form.text_area :cuerpo_markdown, rows: 10, placeholder: "Introduce el contexto, código de error y lo que has intentado...\n\nEjemplo:\n# Título\n**Negrita** *cursiva*\n```ruby\ncodigo\n```" %>
+    <p style="font-size: 0.85em; color: var(--text-secundario); margin-top: 5px;">
+      Puedes usar Markdown: **negrita**, *cursiva*, `codigo`, ```bloques de codigo```, # Títulos, listas, etc.
+    </p>
   </div>
 
-  <div class="actions">
-    <%= form.submit preguntum.new_record? ? "Publicar Pregunta" : "Guardar Cambios" %>
+  <% if defined?(@preview_html) && @preview_html.present? %>
+    <div style="margin-bottom: 20px; padding: 15px; background: var(--bg-principal); border: 1px solid var(--border-color); border-radius: 6px;">
+      <h3 style="margin-top: 0; color: var(--accent);">Vista Previa:</h3>
+      <div style="color: var(--text-principal); line-height: 1.6;">
+        <%= @preview_html %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="actions" style="display: flex; gap: 10px;">
+    <%= form.submit "Preview", name: "preview", style: "background: var(--border-color); color: var(--text-principal);" %>
+    <%= form.submit preguntum.new_record? ? "Publicar Pregunta" : "Guardar Cambios", name: "commit" %>
   </div>
 <% end %>

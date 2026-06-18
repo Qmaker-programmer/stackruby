@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_06_18_041917) do
+ActiveRecord::Schema.define(version: 2026_06_18_202500) do
 
   create_table "comentarios", force: :cascade do |t|
     t.text "cuerpo"
@@ -19,6 +19,8 @@ ActiveRecord::Schema.define(version: 2026_06_18_041917) do
     t.integer "comentario_padre_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "cuerpo_markdown"
+    t.text "cuerpo_html"
   end
 
   create_table "estrellas", force: :cascade do |t|
@@ -44,6 +46,8 @@ ActiveRecord::Schema.define(version: 2026_06_18_041917) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "usuario_id"
     t.integer "vistas", default: 0
+    t.text "cuerpo_markdown"
+    t.text "cuerpo_html"
   end
 
   create_table "usuarios", force: :cascade do |t|

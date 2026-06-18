@@ -3,7 +3,7 @@ class ComentariosController < ApplicationController
 
   def create
     @preguntum = Preguntum.find(params[:preguntum_id])
-    @comentario = @preguntum.comentarios.new(cuerpo: params[:cuerpo])
+    @comentario = @preguntum.comentarios.new(cuerpo_markdown: params[:cuerpo_markdown])
     @comentario.usuario_id = usuario_actual.id
     @comentario.comentario_padre_id = params[:comentario_padre_id] if params[:comentario_padre_id].present?
 
@@ -20,7 +20,7 @@ class ComentariosController < ApplicationController
 
     # Seguridad: Solo el autor real puede editar su propio comentario no-fantasma
     if usuario_actual && @comentario.usuario_id == usuario_actual.id && !@comentario.fantasma?
-      if @comentario.update(cuerpo: params[:cuerpo])
+      if @comentario.update(cuerpo_markdown: params[:cuerpo_markdown])
         redirect_to @comentario.preguntum, notice: "¡Comentario actualizado!"
       else
         redirect_to @comentario.preguntum, alert: "Error al actualizar el comentario."

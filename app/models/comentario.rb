@@ -5,7 +5,8 @@ class Comentario < ApplicationRecord
   belongs_to :padre, class_name: "Comentario", foreign_key: "comentario_padre_id", optional: true
   has_many :hijos, class_name: "Comentario", foreign_key: "comentario_padre_id", dependent: :destroy
 
-  validates :cuerpo, presence: true
+  validates :cuerpo_markdown, presence: true
+  before_save :procesar_markdown
 
   def eliminar_con_poda!
     # Procedemos con la bifurcación del algoritmo de poda
@@ -23,6 +24,21 @@ class Comentario < ApplicationRecord
   end
 
   private
+
+  def procesar_markdown
+    if cuerpo_markdown_changed?
+      require 'kramdown'
+      options = {
+        input: 'GFM',
+        hard_wrap: true,
+        parse_block_html: true,
+        parse_span_html: true
+      }
+      self.cuerpo_html = Kramdown::Document.new(cuerpo_markdown, options).to_html
+      # Mantenemos 'cuerpo' sincronizado
+      self.cuerpo = cuerpo_markdown
+    end
+  end
 
   # Recolector en cascada reversa: Limpia padres fantasmas vacíos
   def recolector_fantasmas_reverso

@@ -32,7 +32,9 @@
         • <%= preguntum.created_at.strftime("%d/%m/%Y %H:%M") %>
       </p>
 
-      <p style="color: var(--text-principal); font-size: 1em; margin-bottom: 15px;"><%= preguntum.cuerpo.truncate(200) %></p>
+      <div style="color: var(--text-principal); font-size: 1em; margin-bottom: 15px;">
+        <%= (preguntum.cuerpo_html || preguntum.cuerpo).truncate_words(30, separator: ' ', omission: '...').html_safe %>
+      </div>
 
       <div style="display: flex; align-items: center; gap: 12px; background: var(--bg-principal); padding: 8px 12px; border-radius: 6px; width: fit-content; border: 1px solid var(--border-color);">
         <strong style="color: #ffd700; font-size: 1.1em;">★ <%= preguntum.total_estrellas %></strong>

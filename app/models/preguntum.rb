@@ -8,8 +8,11 @@ class Preguntum < ApplicationRecord
   has_many :estrellas, dependent: :destroy
   has_many :usuarios_que_dieron_estrella, through: :estrellas, source: :usuario
 
-  validates :titulo, :cuerpo, presence: true
+  validates :titulo, presence: true
+  validates :cuerpo_markdown, presence: true
+
   before_create :inicializar_contadores
+  before_save :procesar_markdown
 
   # Método para contar cuántas estrellas tiene esta pregunta
   def total_estrellas
@@ -32,5 +35,24 @@ class Preguntum < ApplicationRecord
   def inicializar_contadores
     self.votos ||= 0
     self.vistas ||= 0 if self.respond_to?(:vistas=)
+  end
+
+  def procesar_markdown
+    if cuerpo_markdown_changed?
+      require 'kramdown'
+
+      # Normalizar tablas: reemplazar em-dash (—) y otros caracteres raros por guiones normales
+      texto_normalizado = cuerpo_markdown.gsub(/\|[—–−]+\|/, '|---|')
+
+      options = {
+        input: 'GFM',
+        hard_wrap: true,
+        parse_block_html: true,  # Parsea bloques HTML
+        parse_span_html: true     # Parsea HTML inline
+      }
+      self.cuerpo_html = Kramdown::Document.new(texto_normalizado, options).to_html
+      # Mantenemos 'cuerpo' sincronizado con el markdown por compatibilidad
+      self.cuerpo = cuerpo_markdown
+    end
   end
 end

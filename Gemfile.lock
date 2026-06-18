@@ -76,6 +76,10 @@ GEM
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     io-console (0.8.2)
+    kramdown (2.5.2)
+      rexml (>= 3.4.4)
+    kramdown-parser-gfm (1.1.0)
+      kramdown (~> 2.0)
     listen (3.10.0)
       logger
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -149,6 +153,7 @@ GEM
       ffi (~> 1.0)
     reline (0.6.3)
       io-console (~> 0.5)
+    rexml (3.4.4)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
@@ -185,6 +190,8 @@ PLATFORMS
 DEPENDENCIES
   bcrypt (~> 3.1.7)
   byebug
+  kramdown (~> 2.4)
+  kramdown-parser-gfm (~> 1.1)
   listen (~> 3.3)
   logger
   puma (~> 6.0)

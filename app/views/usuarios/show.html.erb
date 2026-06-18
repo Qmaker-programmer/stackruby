@@ -30,7 +30,9 @@
   <% @pregunta.each do |preguntum| %>
     <div class="card" style="position: relative;">
       <h4 style="margin-bottom: 10px;"><%= link_to preguntum.titulo, preguntum %></h4>
-      <p style="color: var(--text-principal); margin-bottom: 15px; font-size: 0.95em;"><%= preguntum.cuerpo %></p>
+      <div style="color: var(--text-principal); margin-bottom: 15px; font-size: 0.95em;">
+        <%= (preguntum.cuerpo_html || preguntum.cuerpo).truncate_words(30, separator: ' ', omission: '...').html_safe %>
+      </div>
 
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <span style="background: rgba(255, 215, 0, 0.1); color: #ffd700; padding: 4px 10px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">

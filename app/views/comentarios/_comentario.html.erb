@@ -13,7 +13,9 @@
     <% end %>
   </p>
 
-  <p style="margin: 6px 0; color: var(--text-principal); font-size: 0.95em; white-space: pre-line; <%= 'font-style: italic; color: var(--text-secundario);' if comentario.fantasma? %>"><%= comentario.cuerpo %></p>
+  <div style="margin: 6px 0; color: var(--text-principal); font-size: 0.95em; <%= 'font-style: italic; color: var(--text-secundario);' if comentario.fantasma? %>">
+    <%= (comentario.cuerpo_html || comentario.cuerpo).html_safe %>
+  </div>
 
   <div style="display: flex; gap: 12px; font-size: 0.8em; align-items: center;">
     <% unless comentario.fantasma? %>
@@ -21,7 +23,7 @@
         <summary style="cursor: pointer; color: var(--text-secundario); list-style: none;">Responder</summary>
         <%= form_with url: preguntum_comentarios_path(comentario.preguntum), local: true, style: "margin-top: 8px; min-width: 250px;" do |f| %>
           <%= hidden_field_tag :comentario_padre_id, comentario.id %>
-          <%= f.text_area :cuerpo, rows: 2, placeholder: "Escribe tu respuesta pública...", required: true, style: "margin-bottom: 8px;" %><br>
+          <%= f.text_area :cuerpo_markdown, rows: 2, placeholder: "Escribe tu respuesta (Markdown soportado)...", required: true, style: "margin-bottom: 8px;" %><br>
           <%= f.submit "Responder", style: "padding: 6px 12px; font-size: 0.85em;" %>
         <% end %>
       </details>
@@ -35,7 +37,7 @@
           <summary style="cursor: pointer; color: var(--accent); list-style: none;">Editar</summary>
           <%# SOLUCIÓN POLIMÓRFICA: Rails deduce la ruta automáticamente %>
           <%= form_with model: [comentario.preguntum, comentario], method: :patch, local: true, style: "margin-top: 8px; min-width: 250px;" do |f| %>
-            <%= f.text_area :cuerpo, value: comentario.cuerpo, rows: 2, required: true, style: "margin-bottom: 8px;" %><br>
+            <%= f.text_area :cuerpo_markdown, value: comentario.cuerpo_markdown || comentario.cuerpo, rows: 2, required: true, style: "margin-bottom: 8px;" %><br>
             <%= f.submit "Guardar Cambios", style: "padding: 6px 12px; font-size: 0.85em;" %>
           <% end %>
         </details>

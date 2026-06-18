@@ -34,14 +34,29 @@
   <% end %>
 
   <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 20px;">
-  <p style="font-size: 1.15em; line-height: 1.6; color: var(--text-principal); white-space: pre-line;"><%= @preguntum.cuerpo %></p>
+
+  <% if params[:ver_markdown] == 'true' %>
+    <div style="padding: 15px; background: var(--bg-principal); border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 15px;">
+      <h3 style="margin-top: 0; color: var(--accent); font-size: 1em;">Código Markdown Original:</h3>
+      <pre style="background: #000; padding: 12px; border-radius: 4px; overflow-x: auto; color: #0f0; font-family: 'Courier New', monospace; font-size: 0.9em; white-space: pre-wrap;"><%= @preguntum.cuerpo_markdown %></pre>
+      <%= link_to "← Ver HTML renderizado", preguntum_path(@preguntum), style: "color: var(--accent); font-size: 0.9em;" %>
+    </div>
+  <% else %>
+    <div style="font-size: 1.15em; line-height: 1.6; color: var(--text-principal);">
+      <%= @preguntum.cuerpo_html&.html_safe || @preguntum.cuerpo %>
+    </div>
+    <div style="margin-top: 15px;">
+      <%= link_to "Ver Markdown →", preguntum_path(@preguntum, ver_markdown: true), style: "color: var(--text-secundario); font-size: 0.85em;" %>
+    </div>
+  <% end %>
 </div>
 
 <h2 style="margin-top: 40px; margin-bottom: 20px;">Comentarios en hilo</h2>
 
 <% if usuario_actual %>
   <%= form_with url: preguntum_comentarios_path(@preguntum), local: true, style: "margin-bottom: 30px;" do |f| %>
-    <%= f.text_area :cuerpo, rows: 3, placeholder: "Aporta a la discusion o escribe una solucion...", required: true %>
+    <%= f.text_area :cuerpo_markdown, rows: 3, placeholder: "Aporta a la discusion o escribe una solucion... (Markdown soportado)", required: true %>
+    <p style="font-size: 0.8em; color: var(--text-secundario); margin: 5px 0;">Puedes usar Markdown: **negrita**, *cursiva*, `codigo`, etc.</p>
     <%= f.submit "Publicar Comentario Principal" %>
   <% end %>
 <% else %>
