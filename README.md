@@ -242,7 +242,7 @@ Estrella
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/StackRuby.git
+git clone https://github.com/Qmaker-programmer/stackruby.git
 cd StackRuby
 
 # 2. Instalar dependencias
