@@ -504,7 +504,7 @@ Ver [LICENSE](LICENSE) para más detalles.
 
  **Proyecto**: [StackRuby en GitHub](https://github.com/Qmaker-programmer/stackruby)
 - **Issues**: [Reportar un bug](https://github.com/Qmaker-programmer/stackruby/issues)
-- **Autor**: Qmaker
+- **Autor**: [Qmaker](https://github.com/Qmaker-programmer)
 
 ---
 
