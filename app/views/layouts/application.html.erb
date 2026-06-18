@@ -15,12 +15,12 @@
         --accent: #58a6ff;
         --accent-green: #238636;
       }
-      
+
       html, body {
         background-color: var(--bg-principal);
         color: var(--text-principal);
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        margin: 0; 
+        margin: 0;
         padding: 0;
         height: 100%;
         width: 100%;
@@ -63,27 +63,27 @@
         box-sizing: border-box; /* Evita que el padding deforme el ancho completo */
       }
 
-      h1, h2, h3 { 
-        color: #fff; margin-top: 0; 
+      h1, h2, h3 {
+        color: #fff; margin-top: 0;
       }
 
-      a { 
-        color: var(--accent); 
-        text-decoration: none; 
+      a {
+        color: var(--accent);
+        text-decoration: none;
       }
-      a:hover { 
-        text-decoration: underline; 
+      a:hover {
+        text-decoration: underline;
       }
 
       /* Inputs estirados al ancho completo real */
       input[type="text"], textarea, input[type="file"], input[type="password"] {
-        background-color: var(--bg-principal); 
+        background-color: var(--bg-principal);
         border: 1px solid var(--border-color);
-        color: var(--text-principal); 
-        border-radius: 6px; 
-        padding: 12px; 
-        width: 100%; 
-        box-sizing: border-box; 
+        color: var(--text-principal);
+        border-radius: 6px;
+        padding: 12px;
+        width: 100%;
+        box-sizing: border-box;
         margin-bottom: 15px;
         font-size: 1em;
       }
@@ -120,59 +120,59 @@
       }
 
       input[type="submit"], button {
-        background-color: var(--accent-green); 
-        color: white; 
-        border: none; 
-        padding: 12px 20px; 
-        border-radius: 6px; 
-        cursor: pointer; 
+        background-color: var(--accent-green);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        cursor: pointer;
         font-weight: bold;
         font-size: 1em;
       }
 
-      .flash-notice { 
-        padding: 12px; 
-        background: rgba(35, 134, 54, 0.2); 
-        border: 1px solid var(--accent-green); 
-        border-radius: 6px; 
-        color: #56d364; margin-bottom: 25px; 
+      .flash-notice {
+        padding: 12px;
+        background: rgba(35, 134, 54, 0.2);
+        border: 1px solid var(--accent-green);
+        border-radius: 6px;
+        color: #56d364; margin-bottom: 25px;
       }
 
-      .flash-alert { 
-        padding: 12px; 
-        background: rgba(218, 54, 51, 0.2); 
-        border: 1px solid #da3633; 
-        border-radius: 6px; 
-        color: #f85149; margin-bottom: 25px; 
+      .flash-alert {
+        padding: 12px;
+        background: rgba(218, 54, 51, 0.2);
+        border: 1px solid #da3633;
+        border-radius: 6px;
+        color: #f85149; margin-bottom: 25px;
       }
 
-      .avatar { 
-        width: 64px; 
-        height: 64px; 
-        border-radius: 50%; 
-        object-fit: cover; 
-        border: 2px solid var(--accent); 
+      .avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--accent);
       }
     </style>
   </head>
 
   <body>
     <div class="app-layout">
-      
+
       <aside class="sidebar">
         <h1>
           <%= link_to "
           StackRuby
-          ", 
+          ",
           root_path,
           style: "
           text-decoration: none
           color: var(
           --text-secundario
-          );" 
+          );"
           %>
         </h1>
-        
+
         <hr style="border: 0; border-top: 1px solid var(--border-color); width: 100%; margin-bottom: 25px;">
 
         <% if usuario_actual %>
@@ -187,35 +187,42 @@
               <%= link_to "Mi Perfil Público", usuario_path(usuario_actual), style: "font-size: 0.85em;" %>
             </div>
           </div>
-          
+
           <ul style="list-style: none; padding: 0; margin: 0 0 25px 0; line-height: 2.2; font-size: 1.05em;">
 
             <li>-
              <%= link_to "
              Preguntas
-             ", 
+             ",
              root_path %>
             </li>
 
             <li>-
              <%= link_to "
+             Favoritos
+             ",
+             favoritos_path %>
+            </li>
+
+            <li>-
+             <%= link_to "
              Configurar mi Cuenta
-             ", 
+             ",
              edit_usuario_path(usuario_actual) %>
             </li>
 
-            <li>- 
+            <li>-
               <%= link_to "
               Novedades
-              ", 
+              ",
               novedades_path %>
             </li>
-            
-            <li>- 
+
+            <li>-
               <%= link_to "
               Cerrar Sesión
-              ", 
-              salir_path, 
+              ",
+              salir_path,
               style: "color: #da3633;" %>
             </li>
 

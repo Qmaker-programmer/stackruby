@@ -1,0 +1,42 @@
+<%= link_to "← Volver a la pregunta", @preguntum, style: "color: var(--text-secundario);" %>
+
+<div class="card" style="margin-top: 20px;">
+  <h1 style="margin-bottom: 20px;">⭐ Usuarios que dieron estrella</h1>
+
+  <p style="color: var(--text-secundario); margin-bottom: 25px;">
+    A tu pregunta: <strong style="color: white;">"<%= @preguntum.titulo %>"</strong>
+  </p>
+
+  <% if @usuarios_con_estrella.empty? %>
+    <p style="text-align: center; color: var(--text-secundario); padding: 20px;">
+      Aún nadie le ha dado estrella a esta pregunta.
+    </p>
+  <% else %>
+    <div style="display: grid; gap: 15px;">
+      <% @usuarios_con_estrella.each do |usuario| %>
+        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--bg-principal); border: 1px solid var(--border-color); border-radius: 6px;">
+          <% if usuario.foto_base64.present? %>
+            <img src="<%= usuario.foto_base64 %>" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #ffd700;">
+          <% else %>
+            <div style="width: 48px; height: 48px; background: #30363d; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #ffd700; font-size: 1.5em;">👤</div>
+          <% end %>
+
+          <div style="flex: 1;">
+            <%= link_to usuario.nombre, usuario_path(usuario), style: "font-weight: bold; font-size: 1.1em; color: var(--accent);" %>
+            <% if usuario.descripcion.present? %>
+              <p style="margin: 4px 0 0 0; color: var(--text-secundario); font-size: 0.9em;"><%= usuario.descripcion.truncate(100) %></p>
+            <% end %>
+          </div>
+
+          <span style="color: #ffd700; font-size: 1.5em;">★</span>
+        </div>
+      <% end %>
+    </div>
+
+    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 215, 0, 0.05); border: 1px solid #ffd700; border-radius: 6px;">
+      <p style="margin: 0; text-align: center; color: var(--text-secundario); font-size: 0.9em;">
+        <strong style="color: #ffd700;"><%= @usuarios_con_estrella.count %></strong> persona(s) encontraron útil tu pregunta
+      </p>
+    </div>
+  <% end %>
+</div>

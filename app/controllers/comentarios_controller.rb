@@ -17,7 +17,7 @@ class ComentariosController < ApplicationController
   # Acción para procesar la actualización del comentario
   def update
     @comentario = Comentario.find(params[:id])
-    
+
     # Seguridad: Solo el autor real puede editar su propio comentario no-fantasma
     if usuario_actual && @comentario.usuario_id == usuario_actual.id && !@comentario.fantasma?
       if @comentario.update(cuerpo: params[:cuerpo])
@@ -32,7 +32,7 @@ class ComentariosController < ApplicationController
 
   def destroy
     @comentario = Comentario.find(params[:id])
-    
+
     if usuario_actual && @comentario.usuario_id == usuario_actual.id
       # Al ejecutar este método, se disparan los descuentos de votos y la poda de fantasmas de forma secuencial
       @comentario.eliminar_con_poda!
@@ -43,15 +43,5 @@ class ComentariosController < ApplicationController
   end
 
 
-  def votar_arriba
-    @comentario = Comentario.find(params[:id])
-    @comentario.increment!(:votos)
-    redirect_to @comentario.preguntum
-  end
-
-  def votar_abajo
-    @comentario = Comentario.find(params[:id])
-    @comentario.decrement!(:votos)
-    redirect_to @comentario.preguntum
-  end
+  # Los comentarios ya no tienen sistema de votos
 end

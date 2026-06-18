@@ -1,6 +1,6 @@
 class PreguntaController < ApplicationController
-  before_action :exigir_usuario, only: %i[ new create votar_arriba votar_abajo ]
-  before_action :set_preguntum, only: %i[ show edit update destroy votar_arriba votar_abajo ]
+  before_action :exigir_usuario, only: %i[ new create toggle_estrella favoritos ]
+  before_action :set_preguntum, only: %i[ show edit update destroy toggle_estrella quien_dio_estrella ]
 
   # GET /pregunta
   def index
@@ -8,7 +8,7 @@ class PreguntaController < ApplicationController
     if params[:buscar_usuario].present?
       # Buscamos el usuario ignorando mayúsculas/minúsculas (case-insensitive)
       usuario_encontrado = Usuario.where("LOWER(nombre) = ?", params[:buscar_usuario].downcase).first
-      
+
       if usuario_encontrado
         # Si existe, lo mandamos directo a su perfil facherito
         return redirect_to usuario_path(usuario_encontrado)
@@ -27,6 +27,8 @@ class PreguntaController < ApplicationController
   end
   # GET /pregunta/1
   def show
+    # Incrementar contador de vistas
+    @preguntum.incrementar_vista!
   end
 
   # GET /pregunta/new
@@ -88,14 +90,40 @@ end
     end
   end
 
-  # PATCH /pregunta/1/votar_arriba
-  def votar_arriba
-    procesar_voto("arriba")
+  # POST /pregunta/1/toggle_estrella
+  def toggle_estrella
+    # No puedes dar estrella a tu propia pregunta
+    if @preguntum.usuario_id == usuario_actual.id
+      return redirect_to @preguntum, alert: "¡No puedes dar estrella a tus propias preguntas!"
+    end
+
+    # Buscar si ya tiene estrella
+    estrella_existente = Estrella.find_by(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id)
+
+    if estrella_existente
+      # Si ya tiene estrella, la quitamos
+      estrella_existente.destroy
+      redirect_to @preguntum, notice: "Estrella retirada."
+    else
+      # Si no tiene estrella, la agregamos
+      Estrella.create(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id)
+      redirect_to @preguntum, notice: "¡Estrella agregada!"
+    end
   end
 
-  # PATCH /pregunta/1/votar_abajo
-  def votar_abajo
-    procesar_voto("abajo")
+  # GET /pregunta/1/quien_dio_estrella
+  def quien_dio_estrella
+    # Solo el autor puede ver quién le dio estrella
+    unless @preguntum.usuario_id == usuario_actual&.id
+      return redirect_to root_path, alert: "Acceso denegado."
+    end
+
+    @usuarios_con_estrella = @preguntum.usuarios_que_dieron_estrella
+  end
+
+  # GET /favoritos
+  def favoritos
+    @preguntas_favoritas = usuario_actual.preguntas_favoritas.order(created_at: :desc)
   end
 
   private
@@ -106,56 +134,5 @@ end
 
   def preguntum_params
     params.require(:preguntum).permit(:titulo, :cuerpo)
-  end
-
-  def procesar_voto(tipo_deseado)
-    # 1. Regla de oro: No autovotos
-    if @preguntum.usuario_id == usuario_actual.id
-      return redirect_to root_path, alert: "¡No puedes votar tus propias preguntas!"
-    end
-
-    # 2. Buscamos si este usuario ya tiene un voto registrado en esta pregunta
-    voto_existente = Voto.find_by(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id)
-
-    if voto_existente
-      if voto_existente.tipo == tipo_deseado
-        # CASO A: Presionó el mismo botón que ya tenía activo -> Cancela el voto (Reddit Neutral)
-        voto_existente.destroy
-        
-        if tipo_deseado == "arriba"
-          @preguntum.decrement!(:votos) # Baja 1 punto
-        else
-          @preguntum.increment!(:votos) # Recupera 1 punto del negativo
-        end
-        
-        flash[:notice] = "Voto retirado."
-      else
-        # CASO B: Cambió de bando (Estaba arriba y presionó abajo, o viceversa)
-        voto_existente.update(tipo: tipo_deseado)
-        
-        if tipo_deseado == "arriba"
-          # Pasó de abajo (-1) a arriba (+1) -> Salto neto de +2
-          @preguntum.update(votos: @preguntum.votos + 2)
-        else
-          # Pasó de arriba (+1) a abajo (-1) -> Salto neto de -2
-          @preguntum.update(votos: @preguntum.votos - 2)
-        end
-        
-        flash[:notice] = "Voto modificado."
-      end
-    else
-      # CASO C: Primer voto del usuario en esta publicación (Estaba neutral)
-      Voto.create(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id, tipo: tipo_deseado)
-      
-      if tipo_deseado == "arriba"
-        @preguntum.increment!(:votos)
-      else
-        @preguntum.decrement!(:votos)
-      end
-      
-      flash[:notice] = "¡Voto registrado!"
-    end
-
-    redirect_to root_path
   end
 end

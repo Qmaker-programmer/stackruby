@@ -2,15 +2,37 @@
 
 <div class="card" style="margin-top: 20px;">
   <h1 style="margin-bottom: 10px;"><%= @preguntum.titulo %></h1>
-  
+
   <p style="color: var(--text-secundario); font-size: 0.9em; display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
     <% if @preguntum.usuario&.foto_base64.present? %>
       <img src="<%= @preguntum.usuario.foto_base64 %>" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
     <% end %>
-    Publicado por: <strong><%= @preguntum.usuario&.nombre || "Anonimo" %></strong> | 
-    <strong style="color: white;">Votos: <%= @preguntum.votos %></strong>
+    Publicado por: <strong><%= link_to @preguntum.usuario&.nombre || "Anonimo", usuario_path(@preguntum.usuario) %></strong> |
+    <strong style="color: #ffd700; font-size: 1.1em;">★ <%= @preguntum.total_estrellas %> estrellas</strong> |
+    <span style="color: var(--text-secundario);"><%= @preguntum.vistas %> vistas</span>
   </p>
-  
+
+  <% if usuario_actual %>
+    <div style="margin-bottom: 20px;">
+      <% if @preguntum.usuario_id != usuario_actual.id %>
+        <% if @preguntum.tiene_estrella_de?(usuario_actual) %>
+          <%= button_to "★ Quitar Estrella", toggle_estrella_preguntum_path(@preguntum), method: :post, style: "background: none; border: 1px solid #ffd700; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: normal; font-size: 0.9em; color: #ffd700;" %>
+        <% else %>
+          <%= button_to "☆ Dar Estrella", toggle_estrella_preguntum_path(@preguntum), method: :post, style: "background: none; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: normal; font-size: 0.9em; color: var(--text-secundario);" %>
+        <% end %>
+      <% end %>
+
+      <% if @preguntum.usuario_id == usuario_actual.id && @preguntum.total_estrellas > 0 %>
+        <div style="margin-top: 15px; padding: 10px; background: rgba(255, 215, 0, 0.05); border: 1px solid var(--border-color); border-radius: 4px;">
+          <p style="margin: 0; color: var(--text-secundario); font-size: 0.85em;">
+            <%= @preguntum.total_estrellas %> persona(s) le dieron estrella.
+            <%= link_to "Ver quiénes", quien_dio_estrella_preguntum_path(@preguntum), style: "color: var(--accent);" %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 20px;">
   <p style="font-size: 1.15em; line-height: 1.6; color: var(--text-principal); white-space: pre-line;"><%= @preguntum.cuerpo %></p>
 </div>
@@ -29,24 +51,24 @@
 <% end %>
 
 <div style="margin-top: 20px;">
-  <%= render partial: 'comentarios/comentario', collection: @preguntum.comentarios.where(comentario_padre_id: nil).order(votos: :desc, created_at: :asc) %>
+  <%= render partial: 'comentarios/comentario', collection: @preguntum.comentarios.where(comentario_padre_id: nil).order(created_at: :asc) %>
 </div>
 
 <hr style="margin-top: 50px; border: 0; border-top: 1px solid var(--border-color);">
 
 <%# Zona de Gestion de la pregunta %>
 <div style="margin-bottom: 40px;">
-  
+
   <% if usuario_actual && @preguntum.usuario_id == usuario_actual.id %>
-    
+
     <div style="margin-bottom: 20px; font-size: 0.95em;">
       <%= link_to 'Editar esta Pregunta', edit_preguntum_path(@preguntum), style: "color: var(--accent); font-weight: bold;" %>
       <span style="color: var(--border-color); margin: 0 10px;">|</span>
-      
+
       <%# MODIFICADO: Ahora es un enlace simple a la pantalla intermedia de confirmacion %>
       <%= link_to 'Borrar esta Pregunta', delete_preguntum_path(@preguntum), style: "color: #da3633; font-weight: bold;" %>
       <span style="color: var(--border-color); margin: 0 10px;">|</span>
-      
+
       <%= link_to 'Volver a la lista', root_path, style: "color: var(--text-secundario);" %>
     </div>
 

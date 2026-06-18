@@ -1,2 +1,0 @@
-class Voto < ApplicationRecord
-end

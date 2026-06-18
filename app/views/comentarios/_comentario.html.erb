@@ -11,15 +11,11 @@
       <% end %>
       <strong style="color: #fff;"><%= comentario.usuario&.nombre || "Anónimo" %></strong>
     <% end %>
-    | Votos: <span style="color: var(--accent); font-weight: bold;"><%= comentario.votos %></span>
   </p>
-  
+
   <p style="margin: 6px 0; color: var(--text-principal); font-size: 0.95em; white-space: pre-line; <%= 'font-style: italic; color: var(--text-secundario);' if comentario.fantasma? %>"><%= comentario.cuerpo %></p>
 
   <div style="display: flex; gap: 12px; font-size: 0.8em; align-items: center;">
-    <%= button_to "▲", votar_arriba_preguntum_comentario_path(comentario.preguntum, comentario), method: :patch, style: "background: none; border: none; cursor: pointer; color: var(--accent); font-weight: bold; padding: 0;" %>
-    <%= button_to "▼", votar_abajo_preguntum_comentario_path(comentario.preguntum, comentario), method: :patch, style: "background: none; border: none; cursor: pointer; color: #da3633; font-weight: bold; padding: 0;" %>
-    
     <% unless comentario.fantasma? %>
       <details style="display: inline;">
         <summary style="cursor: pointer; color: var(--text-secundario); list-style: none;">Responder</summary>
@@ -33,7 +29,7 @@
       <%# CONTROL DE ACCIONES DE AUTOR: Editar y Borrar %>
       <% if usuario_actual && comentario.usuario_id == usuario_actual.id %>
         <span style="color: var(--border-color);">|</span>
-        
+
         <%# Formulario Inline para editar usando el array polimórfico [pregunta, comentario] %>
         <details style="display: inline;">
           <summary style="cursor: pointer; color: var(--accent); list-style: none;">Editar</summary>
@@ -52,6 +48,6 @@
   </div>
 
   <% if comentario.hijos.any? %>
-    <%= render partial: 'comentarios/comentario', collection: comentario.hijos.order(votos: :desc, created_at: :asc) %>
+    <%= render partial: 'comentarios/comentario', collection: comentario.hijos.order(created_at: :asc) %>
   <% end %>
 </div>

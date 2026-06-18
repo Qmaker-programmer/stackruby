@@ -1,18 +1,16 @@
 Rails.application.routes.draw do
   resources :pregunta do
     member do
-      patch :votar_arriba
-      patch :votar_abajo
+      post :toggle_estrella
+      get :quien_dio_estrella
       get :delete, action: :confirmar_eliminacion
     end
-    # MODIFICADO: Añadido :update y :destroy al array inside 'only'
-    resources :comentarios, only: [:create, :update, :destroy] do
-      member do
-        patch :votar_arriba
-        patch :votar_abajo
-      end
-    end
+
+    resources :comentarios, only: [:create, :update, :destroy]
   end
+
+  # Ruta para favoritos
+  get '/favoritos', to: 'pregunta#favoritos', as: 'favoritos'
 
   get 'buscar_usuarios', to: 'usuarios#buscar', as: :buscar_usuarios
 
@@ -22,7 +20,7 @@ Rails.application.routes.draw do
       delete :destruir_cuenta
     end
   end
-  
+
   resources :novedades, only: [:index, :show]
 
   get 'entrar', to: 'sesiones#new'

@@ -1,26 +1,27 @@
-<h1>Preguntas de la Comunidad</h1>
+<h1>⭐ Mis Favoritos</h1>
 
-<%= form_with url: root_path, method: :get, local: true, style: "margin-bottom: 25px;" do |f| %>
-  <div style="display: flex; gap: 10px;">
-    <%= f.text_field :buscar, placeholder: "Buscar pregunta por título o cuerpo...", value: params[:buscar], style: "margin-bottom: 0;" %>
-    <%= f.submit "Buscar", style: "background: var(--accent); padding: 0 20px;" %>
+<p style="color: var(--text-secundario); margin-bottom: 30px;">
+  Preguntas a las que les has dado estrella
+</p>
+
+<% if @preguntas_favoritas.empty? %>
+  <div class="card">
+    <p style="text-align: center; color: var(--text-secundario); padding: 40px 20px;">
+      No has dado estrella a ninguna pregunta aún.<br>
+      <%= link_to "Ver todas las preguntas →", root_path, style: "color: var(--accent); font-weight: bold;" %>
+    </p>
   </div>
-<% end %>
-
-<div style="margin-top: 20px; margin-bottom: 50px;">
-  <%= link_to "Hacer una Pregunta", new_preguntum_path, class: "btn", style: "background-color: var(--accent-green); color: white; padding: 10px 15px; border-radius: 6px; font-weight: bold; display: inline-block;" %>
-</div>
-
-<div id="pregunta">
-  <% @pregunta.each do |preguntum| %>
+<% else %>
+  <% @preguntas_favoritas.each do |preguntum| %>
     <div class="card">
-      <h3 style="margin-bottom: 8px;"><%= link_to preguntum.titulo, preguntum %></h3>
+      <h3 style="margin-bottom: 8px;">
+        <%= link_to preguntum.titulo, preguntum %>
+        <span style="color: #ffd700; font-size: 0.9em; margin-left: 8px;">★</span>
+      </h3>
 
       <p style="font-size: 0.85em; color: var(--text-secundario); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
         <% if preguntum.usuario&.foto_base64.present? %>
           <img src="<%= preguntum.usuario.foto_base64 %>" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;">
-        <% else %>
-
         <% end %>
         Publicado por:
         <% if preguntum.usuario.present? %>
@@ -31,7 +32,7 @@
         • <%= preguntum.created_at.strftime("%d/%m/%Y %H:%M") %>
       </p>
 
-      <p style="color: var(--text-principal); font-size: 1em; margin-bottom: 15px;"><%= preguntum.cuerpo %></p>
+      <p style="color: var(--text-principal); font-size: 1em; margin-bottom: 15px;"><%= preguntum.cuerpo.truncate(200) %></p>
 
       <div style="display: flex; align-items: center; gap: 12px; background: var(--bg-principal); padding: 8px 12px; border-radius: 6px; width: fit-content; border: 1px solid var(--border-color);">
         <strong style="color: #ffd700; font-size: 1.1em;">★ <%= preguntum.total_estrellas %></strong>
@@ -40,4 +41,4 @@
       </div>
     </div>
   <% end %>
-</div>
+<% end %>

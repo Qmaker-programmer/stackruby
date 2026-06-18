@@ -10,16 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_06_17_034342) do
+ActiveRecord::Schema.define(version: 2026_06_18_041917) do
 
   create_table "comentarios", force: :cascade do |t|
     t.text "cuerpo"
-    t.integer "votos"
     t.integer "usuario_id"
     t.integer "preguntum_id"
     t.integer "comentario_padre_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "estrellas", force: :cascade do |t|
+    t.integer "usuario_id"
+    t.integer "preguntum_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.integer "comentario_id"
   end
 
   create_table "novedads", force: :cascade do |t|
@@ -36,6 +43,7 @@ ActiveRecord::Schema.define(version: 2026_06_17_034342) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "usuario_id"
+    t.integer "vistas", default: 0
   end
 
   create_table "usuarios", force: :cascade do |t|
@@ -46,14 +54,6 @@ ActiveRecord::Schema.define(version: 2026_06_17_034342) do
     t.text "descripcion"
     t.text "foto_base64"
     t.index ["nombre"], name: "index_usuarios_on_nombre", unique: true
-  end
-
-  create_table "votos", force: :cascade do |t|
-    t.integer "usuario_id"
-    t.integer "preguntum_id"
-    t.string "tipo"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
   end
 
 end

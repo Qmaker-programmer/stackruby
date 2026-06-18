@@ -3,10 +3,11 @@ class UsuariosController < ApplicationController
 
   def show
     @usuario = Usuario.find(params[:id])
-    @pregunta = Preguntum.where(usuario_id: @usuario.id).order(created_at: :desc)
-    @total_preguntas = @pregunta.count
-    @total_votos_recibidos = @pregunta.sum(:votos)
-    @votos_emitidos = Voto.where(usuario_id: @usuario.id).count
+    @pregunta = @usuario.pregunta.order(created_at: :desc)
+    @total_preguntas = @usuario.pregunta.count
+    # Estadísticas de estrellas
+    @estrellas_otorgadas = @usuario.total_estrellas_otorgadas
+    @estrellas_recibidas = @usuario.total_estrellas_recibidas
   end
   # GET /buscar_usuarios
   def buscar
@@ -74,7 +75,7 @@ class UsuariosController < ApplicationController
       # Desafio superado con exito total: Limpiamos sesion y destruimos
       session.delete(:desafio_borrado)
       cookies.delete(:usuario_id) # Se cierra su sesion
-      
+
       @usuario.destroy
       redirect_to root_path, notice: "Su cuenta ha sido eliminada permanentemente. Lamentamos verle partir."
     else
@@ -115,7 +116,7 @@ class UsuariosController < ApplicationController
       else
         flash.now[:notice] = "Vista previa cargada. Recuerda confirmar los cambios."
       end
-      
+
       render :edit, status: :unprocessable_entity
 
     elsif params[:guardar].present?
