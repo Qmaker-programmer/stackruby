@@ -91,29 +91,46 @@ class UsuariosController < ApplicationController
 
   def update
     @usuario = usuario_actual
-    
-    # Procesar foto Base64 (tu lógica facherina existente)
-    if params[:usuario][:foto].present?
-      archivo = params[:usuario][:foto].tempfile
+    @foto_previa_base64 = params[:foto_temporal_base64] # Recuperamos si ya existía una preview previa
+
+    # 1. Procesar la foto Base64 SÓLO si realmente hay un archivo en los params
+    # Usamos .try(:[], :foto) para evitar errores si el hash de usuario viene vacío por alguna razón
+    foto_param = params[:usuario].try(:[], :foto)
+
+    if foto_param.present?
+      archivo = foto_param.tempfile
       base64_data = Base64.strict_encode64(archivo.read)
-      @usuario.foto_base64 = "data:#{params[:usuario][:foto].content_type};base64,#{base64_data}"
+      @foto_previa_base64 = "data:#{foto_param.content_type};base64,#{base64_data}"
     end
 
-    # Intentamos asignar los nuevos datos
+    # Asignamos los datos de texto en memoria para que no se borren en el render
     @usuario.nombre = params[:usuario][:nombre]
     @usuario.descripcion = params[:usuario][:descripcion]
 
-    # Si pasa las validaciones (nombre único), guarda y redirige
-    if @usuario.save
-      # OJO: Si tu sistema de cookies de sesión usa el NOMBRE del usuario para trackearlo,
-      # actualiza la cookie aquí para que no pierda la sesión activa:
-      cookies.encrypted[:usuario_id] = @usuario.id # RECOMENDADO: Guardar el ID, nunca el nombre mero
+    # 2. EVALUAR QUÉ BOTÓN SE PRESIONÓ
+    if params[:previsualizar].present?
+      # BUG CORREGIDO: Si presionó previsualizar pero no subió nada nuevo ni había nada guardado antes
+      if foto_param.blank? && params[:foto_temporal_base64].blank?
+        flash.now[:alert] = "No has seleccionado ninguna imagen para previsualizar."
+      else
+        flash.now[:notice] = "Vista previa cargada. Recuerda confirmar los cambios."
+      end
       
-      redirect_to usuario_path(@usuario), notice: "¡Perfil facherito actualizado con éxito!"
-    else
-      # Si el nombre está repetido, Rails mete el error en @usuario.errors
-      flash.now[:alert] = "No se pudo actualizar: El nombre de usuario ya está en uso por alguien más."
       render :edit, status: :unprocessable_entity
+
+    elsif params[:guardar].present?
+      # Si había una foto en la preview (ya sea de ahora o del intento anterior), la consolidamos
+      if @foto_previa_base64.present?
+        @usuario.foto_base64 = @foto_previa_base64
+      end
+
+      if @usuario.save
+        cookies.encrypted[:usuario_id] = @usuario.id
+        redirect_to usuario_path(@usuario), notice: "¡Perfil facherito actualizado con éxito!"
+      else
+        flash.now[:alert] = "No se pudo actualizar: El nombre de usuario ya está en uso por alguien más."
+        render :edit, status: :unprocessable_entity
+      end
     end
   end
 end

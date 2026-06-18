@@ -1,8 +1,9 @@
 require 'bcrypt'
 
 class Usuario < ApplicationRecord
-  has_many :pregunta
-  has_many :comentarios
+  # MODIFICADO: Se añade dependent: :destroy a ambas relaciones
+  has_many :pregunta, dependent: :destroy
+  has_many :comentarios, dependent: :destroy
 
   validates :nombre, presence: true, uniqueness: { case_sensitive: false }, length: { minimum: 3 }
   validates :contrasena, presence: true, length: { minimum: 6 }

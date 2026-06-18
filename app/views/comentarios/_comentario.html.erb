@@ -1,27 +1,54 @@
 <div style="margin-left: 20px; border-left: 2px solid var(--border-color); padding-left: 15px; margin-top: 12px; margin-bottom: 12px;">
   <p style="margin: 0; font-size: 0.85em; color: var(--text-secundario); display: flex; align-items: center; gap: 6px;">
-    <% if comentario.usuario.foto_base64.present? %>
-      <img src="<%= comentario.usuario.foto_base64 %>" style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover;">
+    <% if comentario.fantasma? %>
+      <span>?</span>
+      <strong style="color: var(--text-secundario);">Anonimo</strong>
     <% else %>
-      <span>👤</span>
+      <% if comentario.usuario&.foto_base64.present? %>
+        <img src="<%= comentario.usuario.foto_base64 %>" style="width: 16px; height: 16px; border-radius: 50%; object-fit: cover;">
+      <% else %>
+        <span>👤</span>
+      <% end %>
+      <strong style="color: #fff;"><%= comentario.usuario&.nombre || "Anónimo" %></strong>
     <% end %>
-    <strong style="color: #fff;"><%= comentario.usuario.nombre %></strong> | Votos: <span style="color: var(--accent); font-weight: bold;"><%= comentario.votos %></span>
+    | Votos: <span style="color: var(--accent); font-weight: bold;"><%= comentario.votos %></span>
   </p>
   
-  <p style="margin: 6px 0; color: var(--text-principal); font-size: 0.95em; white-space: pre-line;"><%= comentario.cuerpo %></p>
+  <p style="margin: 6px 0; color: var(--text-principal); font-size: 0.95em; white-space: pre-line; <%= 'font-style: italic; color: var(--text-secundario);' if comentario.fantasma? %>"><%= comentario.cuerpo %></p>
 
   <div style="display: flex; gap: 12px; font-size: 0.8em; align-items: center;">
-    <%= link_to "▲", votar_arriba_preguntum_comentario_path(comentario.preguntum, comentario), method: :patch, style: "color: var(--accent); font-weight: bold;" %>
-    <%= link_to "▼", votar_abajo_preguntum_comentario_path(comentario.preguntum, comentario), method: :patch, style: "color: #da3633; font-weight: bold;" %>
+    <%= button_to "▲", votar_arriba_preguntum_comentario_path(comentario.preguntum, comentario), method: :patch, style: "background: none; border: none; cursor: pointer; color: var(--accent); font-weight: bold; padding: 0;" %>
+    <%= button_to "▼", votar_abajo_preguntum_comentario_path(comentario.preguntum, comentario), method: :patch, style: "background: none; border: none; cursor: pointer; color: #da3633; font-weight: bold; padding: 0;" %>
     
-    <details style="display: inline;">
-      <summary style="cursor: pointer; color: var(--text-secundario); list-style: none;">Responder</summary>
-      <%= form_with url: preguntum_comentarios_path(comentario.preguntum), local: true, style: "margin-top: 8px; min-width: 250px;" do |f| %>
-        <%= hidden_field_tag :comentario_padre_id, comentario.id %>
-        <%= f.text_area :cuerpo, rows: 2, placeholder: "Escribe tu respuesta pública...", required: true, style: "margin-bottom: 8px;" %><br>
-        <%= f.submit "Responder", style: "padding: 6px 12px; font-size: 0.85em;" %>
+    <% unless comentario.fantasma? %>
+      <details style="display: inline;">
+        <summary style="cursor: pointer; color: var(--text-secundario); list-style: none;">Responder</summary>
+        <%= form_with url: preguntum_comentarios_path(comentario.preguntum), local: true, style: "margin-top: 8px; min-width: 250px;" do |f| %>
+          <%= hidden_field_tag :comentario_padre_id, comentario.id %>
+          <%= f.text_area :cuerpo, rows: 2, placeholder: "Escribe tu respuesta pública...", required: true, style: "margin-bottom: 8px;" %><br>
+          <%= f.submit "Responder", style: "padding: 6px 12px; font-size: 0.85em;" %>
+        <% end %>
+      </details>
+
+      <%# CONTROL DE ACCIONES DE AUTOR: Editar y Borrar %>
+      <% if usuario_actual && comentario.usuario_id == usuario_actual.id %>
+        <span style="color: var(--border-color);">|</span>
+        
+        <%# Formulario Inline para editar usando el array polimórfico [pregunta, comentario] %>
+        <details style="display: inline;">
+          <summary style="cursor: pointer; color: var(--accent); list-style: none;">Editar</summary>
+          <%# SOLUCIÓN POLIMÓRFICA: Rails deduce la ruta automáticamente %>
+          <%= form_with model: [comentario.preguntum, comentario], method: :patch, local: true, style: "margin-top: 8px; min-width: 250px;" do |f| %>
+            <%= f.text_area :cuerpo, value: comentario.cuerpo, rows: 2, required: true, style: "margin-bottom: 8px;" %><br>
+            <%= f.submit "Guardar Cambios", style: "padding: 6px 12px; font-size: 0.85em;" %>
+          <% end %>
+        </details>
+
+        <span style="color: var(--border-color);">|</span>
+        <%# Botón para borrar usando la misma solución polimórfica %>
+        <%= button_to "Borrar", [comentario.preguntum, comentario], method: :delete, data: { confirm: "¿Seguro que deseas eliminar este comentario?" }, style: "background: none; border: none; cursor: pointer; color: #da3633; padding: 0; font-family: inherit; font-size: inherit;" %>
       <% end %>
-    </details>
+    <% end %>
   </div>
 
   <% if comentario.hijos.any? %>

@@ -108,28 +108,54 @@ end
     params.require(:preguntum).permit(:titulo, :cuerpo)
   end
 
-  def procesar_voto(tipo)
-    # 1. Regla: No autovotos
+  def procesar_voto(tipo_deseado)
+    # 1. Regla de oro: No autovotos
     if @preguntum.usuario_id == usuario_actual.id
       return redirect_to root_path, alert: "¡No puedes votar tus propias preguntas!"
     end
 
-    # 2. Regla: Máximo 10 votos POR PREGUNTA por persona
-    votos_usuario_en_esta_pregunta = Voto.where(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id).count
+    # 2. Buscamos si este usuario ya tiene un voto registrado en esta pregunta
+    voto_existente = Voto.find_by(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id)
 
-    if votos_usuario_en_esta_pregunta >= 10
-      return redirect_to root_path, alert: "Ya alcanzaste el límite de 10 votos en esta pregunta."
-    end
-
-    # Si pasa las reglas, se registra el voto
-    Voto.create(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id, tipo: tipo)
-    
-    if tipo == "arriba"
-      @preguntum.increment!(:votos)
+    if voto_existente
+      if voto_existente.tipo == tipo_deseado
+        # CASO A: Presionó el mismo botón que ya tenía activo -> Cancela el voto (Reddit Neutral)
+        voto_existente.destroy
+        
+        if tipo_deseado == "arriba"
+          @preguntum.decrement!(:votos) # Baja 1 punto
+        else
+          @preguntum.increment!(:votos) # Recupera 1 punto del negativo
+        end
+        
+        flash[:notice] = "Voto retirado."
+      else
+        # CASO B: Cambió de bando (Estaba arriba y presionó abajo, o viceversa)
+        voto_existente.update(tipo: tipo_deseado)
+        
+        if tipo_deseado == "arriba"
+          # Pasó de abajo (-1) a arriba (+1) -> Salto neto de +2
+          @preguntum.update(votos: @preguntum.votos + 2)
+        else
+          # Pasó de arriba (+1) a abajo (-1) -> Salto neto de -2
+          @preguntum.update(votos: @preguntum.votos - 2)
+        end
+        
+        flash[:notice] = "Voto modificado."
+      end
     else
-      @preguntum.decrement!(:votos)
+      # CASO C: Primer voto del usuario en esta publicación (Estaba neutral)
+      Voto.create(usuario_id: usuario_actual.id, preguntum_id: @preguntum.id, tipo: tipo_deseado)
+      
+      if tipo_deseado == "arriba"
+        @preguntum.increment!(:votos)
+      else
+        @preguntum.decrement!(:votos)
+      end
+      
+      flash[:notice] = "¡Voto registrado!"
     end
 
-    redirect_to root_path, notice: "¡Voto registrado!"
+    redirect_to root_path
   end
 end
