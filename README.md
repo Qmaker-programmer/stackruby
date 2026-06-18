@@ -502,9 +502,9 @@ Ver [LICENSE](LICENSE) para más detalles.
 
 ## 📧 Contacto
 
-- **Proyecto**: [StackRuby en GitHub](https://github.com/tu-usuario/StackRuby)
-- **Issues**: [Reportar un bug](https://github.com/tu-usuario/StackRuby/issues)
-- **Autor**: Tu nombre / @tu-usuario
+ **Proyecto**: [StackRuby en GitHub](https://github.com/Qmaker-programmer/stackruby)
+- **Issues**: [Reportar un bug](https://github.com/Qmaker-programmer/stackruby/issues)
+- **Autor**: Qmaker
 
 ---
 
@@ -512,7 +512,7 @@ Ver [LICENSE](LICENSE) para más detalles.
 
 **StackRuby** - *El clon de Stack Overflow que necesitabas*
 
-Hecho con ❤️ y Ruby on Rails
+Hecho con mucho té y Ruby on Rails
 
 [![GPLv2](https://img.shields.io/badge/License-GPLv2-blue?style=flat-square)](LICENSE)
 [![Ruby](https://img.shields.io/badge/Ruby-3.2.3-red?style=flat-square)](https://www.ruby-lang.org/)
